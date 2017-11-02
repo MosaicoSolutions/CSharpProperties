@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>MosaicoSolutions</Authors>
+    <Company>MosaicoSolutions</Company>
+    <Description>Java Properties implementation for C#</Description>
+    <Copyright>2017</Copyright>
+    <PackageProjectUrl>https://github.com/MosaicoSolutions/CSharpProperties</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MosaicoSolutions/CSharpProperties</RepositoryUrl>
+  </PropertyGroup>
+</Project>
