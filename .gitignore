@@ -1,3 +1,8 @@
 #Executables
 bin
 obj
+
+#IDE's
+.vs/
+.vscode/
+.idea/
