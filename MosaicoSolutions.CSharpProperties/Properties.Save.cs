@@ -38,35 +38,35 @@ namespace MosaicoSolutions.CSharpProperties
             }
         }
 
-        public async Task SaveAsync(string path)
-            => await SaveAsync(new StreamWriter(path));
+        public Task SaveAsync(string path)
+            => SaveAsync(new StreamWriter(path));
 
-        public async Task SaveAsync(TextWriter writer)
-        {
-            if(writer == null)
-                throw new ArgumentNullException(nameof(writer));
+        public Task SaveAsync(TextWriter writer)
+            => writer == null
+                ? throw new ArgumentNullException(nameof(writer))
+                : Task.Run(async () => 
+                {
+                    using(writer)
+                    {
+                        foreach (var item in this)
+                            await writer.WriteLineAsync($"{item.Key}={item.Value}");
 
-           using(writer)
-            {
-                foreach (var item in this)
-                    await writer.WriteLineAsync($"{item.Key}={item.Value}");
+                        await writer.FlushAsync();
+                    }
+                });
 
-                await writer.FlushAsync();
-            }
-        }
-
-        public async Task SaveAsync(Stream stream)
-        {
-            if(stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            using(var streamWriter = new StreamWriter(stream))
-            {
-                foreach (var item in this)
-                    await streamWriter.WriteLineAsync($"{item.Key}={item.Value}");
-                
-                await streamWriter.FlushAsync();
-            }
-        }
+        public Task SaveAsync(Stream stream)
+            => stream == null
+                ? throw new ArgumentNullException(nameof(stream))
+                : Task.Run(async () => 
+                    {
+                        using(var streamWriter = new StreamWriter(stream))
+                        {
+                            foreach (var item in this)
+                                await streamWriter.WriteLineAsync($"{item.Key}={item.Value}");
+                            
+                            await streamWriter.FlushAsync();
+                        }
+                    });
     }
 }
