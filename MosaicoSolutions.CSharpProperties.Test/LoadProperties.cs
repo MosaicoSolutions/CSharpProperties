@@ -78,7 +78,7 @@ namespace MosaicoSolutions.CSharpProperties.Test
             var properties = PropertiesBuild.NewPropertiesBuild()
                                             .WithValidLineHandle(IsValidLine)
                                             .WithExtractPropertyHandle(PropertyHandle)
-                                            .BuildWithTextReader(new StringReader(content));
+                                            .BuildWithReader(new StringReader(content));
 
             Assert.Equal(properties["password"], "1234");
             Assert.Equal(properties["username"], "cooper");
@@ -112,11 +112,18 @@ namespace MosaicoSolutions.CSharpProperties.Test
             var properties = await PropertiesBuild.NewPropertiesBuild()
                                                   .WithValidLineHandle(IsValidLine)
                                                   .WithExtractPropertyHandle(PropertyHandle)
-                                                  .BuildWithTextReaderAsync(new StringReader(content));
+                                                  .BuildWithReaderAsync(new StringReader(content));
 
             Assert.Equal(properties["password"], "1234");
             Assert.Equal(properties["username"], "cooper");
             Assert.Equal(properties.Count(), 2);
         }
+
+        [Fact]
+        public void LoadFromFileAsyncMustThrowException()
+            => Assert.Throws<ArgumentNullException>(() => 
+            {
+                var properties = Properties.LoadAsync((string)null);
+            });
     }
 }

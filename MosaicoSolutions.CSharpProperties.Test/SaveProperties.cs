@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,5 +48,18 @@ namespace MosaicoSolutions.CSharpProperties.Test
 
             Assert.Equal(properties["sgbd"], "MySql");
         }
+
+        [Fact]
+        public void SaveMustThrowException()
+            => Assert.Throws<ArgumentNullException>(() => 
+            {
+                var file = @"C:\temp\db.properties";
+
+                var properties = Properties.Load(new FileStream(file, FileMode.Open));
+
+                properties.Add("sgbd2", "Oracle");
+
+                properties.SaveAsync((string)null);
+            });
     }
 }
