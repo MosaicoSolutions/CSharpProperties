@@ -10,6 +10,9 @@ namespace MosaicoSolutions.CSharpProperties
     {
         private static string[] IgnoredCharacters = { "'\''", ";", "#" };
 
+        public static IProperties Of(IEnumerable<KeyValuePair<string, string>> properties)
+            => new Properties(properties.ToDictionary(property => property.Key, property => property.Value));
+
         public static IProperties Load(string path)
             => Load(path, IsValidLine, ExtractPropertyFromLine);
         
@@ -19,14 +22,14 @@ namespace MosaicoSolutions.CSharpProperties
         public static IProperties Load(Stream stream)
             => Load(stream, IsValidLine, ExtractPropertyFromLine);
 
-        public static async Task<IProperties> LoadAsync(string path)
-            => await LoadAsync(path, IsValidLine, ExtractPropertyFromLine);
+        public static Task<IProperties> LoadAsync(string path)
+            => LoadAsync(path, IsValidLine, ExtractPropertyFromLine);
 
-        public static async Task<IProperties> LoadAsync(TextReader reader)
-            => await LoadAsync(reader, IsValidLine, ExtractPropertyFromLine);
+        public static Task<IProperties> LoadAsync(TextReader reader)
+            => LoadAsync(reader, IsValidLine, ExtractPropertyFromLine);
 
-        public static async Task<IProperties> LoadAsync(Stream stream)
-            => await LoadAsync(stream, IsValidLine, ExtractPropertyFromLine);
+        public static Task<IProperties> LoadAsync(Stream stream)
+            => LoadAsync(stream, IsValidLine, ExtractPropertyFromLine);
 
         public static IProperties Load(string path,
                                        Func<string, bool> isValidLine,
@@ -108,14 +111,14 @@ namespace MosaicoSolutions.CSharpProperties
             return new Properties(dictionary);
         }
 
-        public static async Task<IProperties> LoadAsync(string path, 
-                                                         Func<string, bool> isValidLine, 
-                                                         Func<string, KeyValuePair<string, string>> extractProperty)
-            => await LoadAsync(new StreamReader(path), isValidLine, extractProperty);
+        public static Task<IProperties> LoadAsync(string path, 
+                                                  Func<string, bool> isValidLine, 
+                                                  Func<string, KeyValuePair<string, string>> extractProperty)
+            =>  LoadAsync(new StreamReader(path), isValidLine, extractProperty);
 
-        public static async Task<IProperties> LoadAsync(TextReader reader, 
-                                                         Func<string, bool> isValidLine, 
-                                                         Func<string, KeyValuePair<string, string>> extractProperty)
+        public static Task<IProperties> LoadAsync(TextReader reader, 
+                                                  Func<string, bool> isValidLine, 
+                                                  Func<string, KeyValuePair<string, string>> extractProperty)
         {
             if(reader == null)
                 throw new ArgumentNullException(nameof(reader));
@@ -126,27 +129,30 @@ namespace MosaicoSolutions.CSharpProperties
             if(extractProperty == null)
                 throw new ArgumentNullException(nameof(extractProperty));
 
-            var dictionary = new Dictionary<string, string>();
-            var line = string.Empty;
+            return Task.Run<IProperties>(async () =>
+            {
+                var dictionary = new Dictionary<string, string>();
+                var line = string.Empty;
 
-            using(reader)
-                while((line = await reader.ReadLineAsync()) != null)
-                {
-                    if(isValidLine(line))
+                using(reader)
+                    while((line = await reader.ReadLineAsync()) != null)
                     {
-                        var keyValuePair = extractProperty(line);
+                        if(isValidLine(line))
+                        {
+                            var keyValuePair = extractProperty(line);
 
-                        if (!string.IsNullOrEmpty(keyValuePair.Key) && !dictionary.ContainsKey(keyValuePair.Key))
-                            dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+                            if (!string.IsNullOrEmpty(keyValuePair.Key) && !dictionary.ContainsKey(keyValuePair.Key))
+                                dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+                        }
                     }
-                }
 
-            return new Properties(dictionary);
+                return new Properties(dictionary);
+            });
         }
 
-        public static async Task<IProperties> LoadAsync(Stream stream,
-                                                        Func<string, bool> isValidLine,
-                                                        Func<string, KeyValuePair<string, string>> extractProperty)
+        public static Task<IProperties> LoadAsync(Stream stream,
+                                                  Func<string, bool> isValidLine,
+                                                  Func<string, KeyValuePair<string, string>> extractProperty)
         {
             if(stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -157,24 +163,27 @@ namespace MosaicoSolutions.CSharpProperties
             if(extractProperty == null)
                 throw new ArgumentNullException(nameof(extractProperty));
 
-            var dictionary = new Dictionary<string, string>();
-            var line = string.Empty;
+            return Task.Run<IProperties>(async () => 
+            {
+                var dictionary = new Dictionary<string, string>();
+                var line = string.Empty;
             
-            using(var streamReader = new StreamReader(stream))
-                while(!streamReader.EndOfStream)
-                {
-                    line = await streamReader.ReadLineAsync();
-
-                    if(isValidLine(line))
+                using(var streamReader = new StreamReader(stream))
+                    while(!streamReader.EndOfStream)
                     {
-                        var keyValuePair = extractProperty(line);
+                        line = await streamReader.ReadLineAsync();
 
-                        if (!string.IsNullOrEmpty(keyValuePair.Key) && !dictionary.ContainsKey(keyValuePair.Key))
-                            dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+                        if(isValidLine(line))
+                        {
+                            var keyValuePair = extractProperty(line);
+
+                            if (!string.IsNullOrEmpty(keyValuePair.Key) && !dictionary.ContainsKey(keyValuePair.Key))
+                                dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+                        }
                     }
-                }
 
-            return new Properties(dictionary);
+                return new Properties(dictionary);
+            });
         }
 
         private static bool IsValidLine(string line)
