@@ -26,22 +26,22 @@ namespace MosaicoSolutions.CSharpProperties
             return this;
         }
 
-        public IProperties BuildWithPathFile(string path) 
+        public IProperties BuildWithFilePath(string path) 
             => Properties.Load(path, _validLineHandle, _extractPropertyHandle);
 
         public IProperties BuildWithStream(Stream stream)
             => Properties.Load(stream, _validLineHandle, _extractPropertyHandle);
 
-        public IProperties BuildWithTextReader(TextReader reader)
+        public IProperties BuildWithReader(TextReader reader)
             => Properties.Load(reader, _validLineHandle, _extractPropertyHandle);
 
-        public async Task<IProperties> BuildWithPathFileAsync(string path) 
+        public async Task<IProperties> BuildWithFilePathAsync(string path) 
             => await Properties.LoadAsync(path, _validLineHandle, _extractPropertyHandle);
 
         public async Task<IProperties> BuildWithStreamAsync(Stream stream)
             => await Properties.LoadAsync(stream, _validLineHandle, _extractPropertyHandle);
 
-        public async Task<IProperties> BuildWithTextReaderAsync(TextReader reader)
+        public async Task<IProperties> BuildWithReaderAsync(TextReader reader)
             => await Properties.LoadAsync(reader, _validLineHandle, _extractPropertyHandle);
     }
 }
