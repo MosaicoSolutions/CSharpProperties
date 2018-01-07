@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,12 +8,9 @@ using System.Xml.Schema;
 
 namespace MosaicoSolutions.CSharpProperties
 {
-    public sealed partial class Properties : IProperties
+    public sealed partial class Properties
     {
-        private const string PropertiesXsd = 
-        @"";
-
-        public static PropertiesStrategy XmlStrategy()
+        public static PropertiesStrategy XmlStrategy
             => content => 
             {
                 var schemas = new XmlSchemaSet();
@@ -28,7 +24,7 @@ namespace MosaicoSolutions.CSharpProperties
                             let value = (string) property.Attribute("value")
                             select new KeyValuePair<string, string>(key, value);
 
-                return Properties.Of(query);
+                return Of(query);
             };
 
         public static IProperties LoadFromXml(string path)
@@ -40,22 +36,10 @@ namespace MosaicoSolutions.CSharpProperties
             => path.EndsWith(".xml");
 
         public static IProperties LoadFromXml(TextReader reader)
-        {
-            if(reader == null)
-                throw new ArgumentNullException(nameof(reader));
-
-            using(reader)
-                return LoadFromStrategy(XmlStrategy(), reader.ReadToEnd());
-        }
+            => LoadFromStrategy(XmlStrategy, reader);
 
         public static IProperties LoadFromXml(Stream stream)
-        {
-            if(stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            using(var streamReader = new StreamReader(stream))
-                return LoadFromStrategy(XmlStrategy(), streamReader.ReadToEnd());
-        }
+            => LoadFromStrategy(XmlStrategy, stream);
 
         public static Task<IProperties> LoadFromXmlAsync(string path)
             => IsXmlFile(path)
@@ -63,21 +47,46 @@ namespace MosaicoSolutions.CSharpProperties
                 : throw new IOException("The file must have the extension '.xml'.");
 
         public static Task<IProperties> LoadFromXmlAsync(TextReader reader)
-            => reader == null
-                ? throw new ArgumentNullException(nameof(reader))
-                : Task.Run(async () => 
-                {
-                    using(reader)
-                        return await LoadFromStrategyAsync(XmlStrategy(), await reader.ReadToEndAsync());
-                });
+            => LoadFromStrategyAsync(XmlStrategy, reader);
 
         public static Task<IProperties> LoadFromXmlAsync(Stream stream)
-            => stream == null
-                ? throw new ArgumentNullException(nameof(stream))
-                : Task.Run(async () => 
-                {
-                    using(var streamReader = new StreamReader(stream))
-                        return await LoadFromStrategyAsync(XmlStrategy(), await streamReader.ReadToEndAsync());
-                });
+            => LoadFromStrategyAsync(XmlStrategy, stream);
+        
+        private const string PropertiesXsd = 
+        @"<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'
+	attributeFormDefault='unqualified' elementFormDefault='qualified'>
+
+	<xs:element name='properties' type='propertiesType' />
+
+	<xs:complexType name='propertiesType'>
+		<xs:sequence>
+			<xs:element type='propertyType' name='property' maxOccurs='unbounded' minOccurs='0' />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name='propertyType'>
+		<xs:simpleContent>
+			<xs:extension base='xs:string'>
+				<xs:attribute type='keyType' name='key' use='required' />
+				<xs:attribute type='valueType' name='value' use='required' />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name='keyType'>
+		<xs:restriction base='xs:string'>
+			<xs:minLength value='1' />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name='valueType'>
+		<xs:restriction base='xs:string'>
+			<xs:minLength value='0' />
+		</xs:restriction>
+	</xs:simpleType>
+	
+</xs:schema>";
+
     }
 }
