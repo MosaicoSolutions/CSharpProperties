@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -34,5 +33,41 @@ namespace MosaicoSolutions.CSharpProperties
         Task SaveAsync(TextWriter writer);
 
         Task SaveAsync(Stream stream);
+
+        void SaveAsXml(string path);
+
+        void SaveAsXml(TextWriter writer);
+
+        void SaveAsXml(Stream stream);
+        
+        Task SaveAsXmlAsync(string path);
+
+        Task SaveAsXmlAsync(TextWriter writer);
+
+        Task SaveAsXmlAsync(Stream stream);
+
+        void SaveAsJson(string path);
+
+        void SaveAsJson(TextWriter writer);
+
+        void SaveAsJson(Stream stream);
+        
+        Task SaveAsJsonAsync(string path);
+
+        Task SaveAsJsonAsync(TextWriter writer);
+
+        Task SaveAsJsonAsync(Stream stream);
+
+        void SaveAsCsv(string path);
+
+        void SaveAsCsv(TextWriter writer);
+
+        void SaveAsCsv(Stream stream);
+        
+        Task SaveAsCsvAsync(string path);
+
+        Task SaveAsCsvAsync(TextWriter writer);
+
+        Task SaveAsCsvAsync(Stream stream);
     }
 }
