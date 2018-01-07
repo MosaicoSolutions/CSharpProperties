@@ -4,7 +4,7 @@
     <Authors>MosaicoSolutions</Authors>
     <Company>MosaicoSolutions</Company>
     <Description>Java Properties implementation for C#</Description>
-    <Copyright>2017</Copyright>
+    <Copyright>2018</Copyright>
     <PackageProjectUrl>https://github.com/MosaicoSolutions/CSharpProperties</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MosaicoSolutions/CSharpProperties</RepositoryUrl>
     <Version>2.0</Version>
