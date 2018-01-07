@@ -7,7 +7,7 @@ namespace MosaicoSolutions.CSharpProperties
     {
         private readonly Dictionary<string, string> _properties;
 
-        private Properties(Dictionary<string, string> properties) 
+        private Properties(IDictionary<string, string> properties) 
             => _properties = new Dictionary<string, string>(properties);
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
