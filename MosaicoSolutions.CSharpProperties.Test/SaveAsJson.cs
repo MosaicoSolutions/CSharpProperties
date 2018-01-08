@@ -54,5 +54,23 @@ namespace MosaicoSolutions.CSharpProperties.Test
             Assert.Equal(properties2["host"], properties["host"]);
             Assert.Equal(properties2.Count(), properties.Count());
         }
+
+        [Fact]
+        public void PropertiesMustBeEmpty()
+        {
+            var content = @"";
+
+            var properties = Properties.Load(new StringReader(content));
+
+            using (var stringWriter = new StringWriter())
+            {
+                properties.SaveAsJson(stringWriter);
+
+                var properties2 = Properties.LoadFromJson(new StringReader(stringWriter.ToString()));
+
+                Assert.Equal(properties2.Count(), 0);
+                Assert.Empty(properties2);
+            }
+        }
     }
 }
