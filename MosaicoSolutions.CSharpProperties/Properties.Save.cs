@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MosaicoSolutions.CSharpProperties
 {
@@ -139,11 +140,11 @@ namespace MosaicoSolutions.CSharpProperties
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
+            var csv = ToCsvString();
+
             using (writer)
             {
-                foreach (var property in _properties)
-                    writer.WriteLine($"{property.Key}{Delimiter}{property.Value}");
-                 
+                writer.Write(csv);
                 writer.Flush();
             }
         }
@@ -159,29 +160,49 @@ namespace MosaicoSolutions.CSharpProperties
                 ? throw new ArgumentNullException(nameof(writer))
                 : Task.Run(async () =>
                 {
+                    var csv = ToCsvString();
+
                     using (writer)
                     {
-                        foreach (var property in _properties)
-                            await writer.WriteLineAsync($"{property.Key}{Delimiter}{property.Value}");
-
+                        await writer.WriteAsync(csv);
                         await writer.FlushAsync();
                     }
                 });
         
-        public string ToXmlString() 
+        private string ToXmlString() 
             => _properties.Aggregate(new StringBuilder().AppendLine("<?xml version='1.0' encoding='UTF-8'?>")
                                                         .AppendLine("<properties>"),
             (stringBuilder, property) => stringBuilder.AppendLine($"\t<property key='{property.Key}' value='{property.Value}' />"),
             stringBuilder => stringBuilder.Append("</properties>").ToString());
-        
-        public string ToJsonString()
-            => _properties.Aggregate(new StringBuilder().AppendLine("["), 
-                (stringBuilder, property) => 
+
+        private string ToJsonString()
+        {
+            var stringBuilder = new StringBuilder().AppendLine("[");
+
+            using (var enumerator = GetEnumerator()) {
+                var last = !enumerator.MoveNext();
+                KeyValuePair<string, string> current;
+
+                while (!last) {
+                    current = enumerator.Current;
+                    last = !enumerator.MoveNext();
+
                     stringBuilder.AppendLine("\t{")
-                        .Append("\t\t\"key\": ").AppendLine($"\"{property.Key}\",")
-                        .Append("\t\t\"value\": ").AppendLine($"\"{property.Value}\"")
-                        .AppendLine("\t},"),
-                stringBuilder => stringBuilder.Remove(stringBuilder.Length - 3, 3) // To remove the last ',' 
-                    .AppendLine().Append("]").ToString());
+                                 .Append("\t\t\"key\": ").AppendLine($"\"{current.Key}\",")
+                                 .Append("\t\t\"value\": ").AppendLine($"\"{current.Value}\"")
+                                 .Append("\t}");
+
+                    if (!last)
+                     stringBuilder.AppendLine(",");
+                }
+            }
+
+            return stringBuilder.AppendLine().AppendLine("]").ToString();
+        }
+
+        private string ToCsvString()
+            => _properties.Aggregate(new StringBuilder(), 
+                                    (stringBuilder, property) => stringBuilder.AppendLine($"{property.Key}{Delimiter}{property.Value}"),
+                                    stringBuilder => stringBuilder.ToString());
     }
 }
