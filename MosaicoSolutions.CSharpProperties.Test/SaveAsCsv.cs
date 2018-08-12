@@ -65,7 +65,7 @@ role;turist";
             }
         }
 
-                [Fact]
+        [Fact]
         public void MustSaveAndNotDisposeStream()
         {
             TextWriter writer = null;
