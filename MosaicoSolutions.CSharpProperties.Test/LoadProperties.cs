@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using MosaicoSolutions.CSharpProperties.Test.IO;
 using Xunit;
 
 namespace MosaicoSolutions.CSharpProperties.Test
@@ -42,7 +44,7 @@ namespace MosaicoSolutions.CSharpProperties.Test
 
         public async Task LoadFromFileAsync()
         {
-            var properties = await Properties.LoadAsync(@"C:\temp\db.properties");
+            var properties = await Properties.LoadAsync($"{TestDirectory.PropertiesDirectoryPath}/db.properties");
 
             Assert.Equal(properties["host"], "localhost");
             Assert.Equal(properties["port"], "8080");
@@ -125,5 +127,17 @@ namespace MosaicoSolutions.CSharpProperties.Test
             {
                 var properties = Properties.LoadAsync((string)null);
             });
+
+        [Fact]
+        public void MustLoadAndDoNotDisposeStream()
+        {
+            using (var stream = File.Open($"{TestDirectory.PropertiesDirectoryPath}/properties.txt", FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            {
+                var properties = Properties.Load(stream);
+
+                stream.WriteByte(5);
+                stream.Flush();
+            }
+        }
     }
 }

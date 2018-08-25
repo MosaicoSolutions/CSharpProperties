@@ -1,5 +1,6 @@
 using System.IO;
 using System.Xml.Schema;
+using MosaicoSolutions.CSharpProperties.Test.IO;
 using Xunit;
 
 namespace MosaicoSolutions.CSharpProperties.Test
@@ -34,5 +35,22 @@ namespace MosaicoSolutions.CSharpProperties.Test
 
                 var properties = Properties.LoadFromXml(new StringReader(xml));
             });
+
+        [Fact]
+        public void LoadFromXmlAndDoNotDisposeStream()
+        {
+            var sourceFile = $"{TestDirectory.PropertiesDirectoryPath}/properties.xml";
+            var targetFile = $"{TestDirectory.PropertiesDirectoryPath}/properties_copy.xml";
+
+            File.Copy(sourceFileName: sourceFile, destFileName: targetFile, overwrite: true);
+
+            using (var stream = File.Open(targetFile, FileMode.Open))
+            {
+                var properties = Properties.LoadFromXml(stream);
+
+                stream.WriteByte(byte.MinValue);
+                stream.WriteByte(byte.MaxValue);
+            }
+        }
     }
 }

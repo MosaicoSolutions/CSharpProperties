@@ -11,13 +11,13 @@ namespace MosaicoSolutions.CSharpProperties
     {
         private const string MessageDefault = @"Error while validating Json";
 
-        private readonly IList<string> _messages = new List<string>();
+        private readonly IEnumerable<string> _messages = new List<string>();
 
         public JsonSchemaValidationException()
         {
         }
 
-        public JsonSchemaValidationException(IList<string> messages) => _messages = messages ?? new List<string>();
+        public JsonSchemaValidationException(IEnumerable<string> messages) => _messages = messages ?? new List<string>();
 
         public JsonSchemaValidationException(string message) : base(message)
         {

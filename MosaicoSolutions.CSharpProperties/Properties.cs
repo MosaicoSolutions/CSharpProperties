@@ -1,11 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MosaicoSolutions.CSharpProperties
 {
     public sealed partial class Properties : IProperties
     {
         private readonly Dictionary<string, string> _properties;
+
+        public static IProperties Of(IEnumerable<KeyValuePair<string, string>> properties)
+            => new Properties(properties.ToDictionary(property => property.Key, property => property.Value));
+
+        public static IProperties Empty()
+            => Of(Enumerable.Empty<KeyValuePair<string, string>>());
 
         private Properties(IDictionary<string, string> properties) 
             => _properties = new Dictionary<string, string>(properties);

@@ -46,7 +46,7 @@ namespace MosaicoSolutions.CSharpProperties
 
         public static IProperties LoadFromJson(string path)
             => IsJsonFile(path)
-                ? LoadFromJson(new StreamReader(path))
+                ? LoadFromStrategy(JsonStrategy, path)
                 : throw new IOException("The file must have the extension '.json'.");
 
         private static bool IsJsonFile(string path)
@@ -60,7 +60,7 @@ namespace MosaicoSolutions.CSharpProperties
 
         public static Task<IProperties> LoadFromJsonAsync(string path)
             => IsJsonFile(path)
-                ? LoadFromJsonAsync(new StreamReader(path))
+                ? LoadFromStrategyAsync(JsonStrategy, path)
                 : throw new IOException("The file must have the extension '.json'.");
 
         public static Task<IProperties> LoadFromJsonAsync(TextReader reader)
