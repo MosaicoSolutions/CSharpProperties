@@ -4,176 +4,233 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using MosaicoSolutions.CSharpProperties.Extensions;
 
 namespace MosaicoSolutions.CSharpProperties
 {
     public sealed partial class Properties
     {
-        public void Save(string path)
-            => Save(new StreamWriter(path));
-
         public void Save(Stream stream)
-            => Save(new StreamWriter(stream));
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            
+            stream.WriteProperties(this);
+        }
+
+        public void Save(string path)
+        {
+            using (var stream = new StreamWriter(path))
+                Save(stream);
+        }
         
         public void Save(TextWriter writer)
         {
             if(writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            
-            using(writer)
-            {
-                foreach (var item in this)
-                    writer.WriteLine($"{item.Key}={item.Value}");
+                
+            foreach (var item in this)
+                writer.WriteLine($"{item.Key}={item.Value}");
 
-                writer.Flush();
-            }
+            writer.Flush();
         }
 
-        public Task SaveAsync(string path)
-            => SaveAsync(new StreamWriter(path));
-
         public Task SaveAsync(Stream stream)
-            => SaveAsync(new StreamWriter(stream));
+            => stream == null
+                ? throw new ArgumentNullException(nameof(stream))
+                : stream.WritePropertiesAsync(this);
+
+        public Task SaveAsync(string path)
+            => path == null
+                ? throw new ArgumentNullException(nameof(path))
+                : Task.Run(async () => 
+                {
+                    using (var stream = new StreamWriter(path))
+                        await SaveAsync(stream);
+                });
         
         public Task SaveAsync(TextWriter writer)
             => writer == null
                 ? throw new ArgumentNullException(nameof(writer))
                 : Task.Run(async () => 
                 {
-                    using(writer)
-                    {
-                        foreach (var item in this)
-                            await writer.WriteLineAsync($"{item.Key}={item.Value}");
+                    foreach (var item in this)
+                        await writer.WriteLineAsync($"{item.Key}={item.Value}");
 
-                        await writer.FlushAsync();
-                    }
+                    await writer.FlushAsync();
                 });
         
-        public void SaveAsXml(string path)
-            => SaveAsXml(new StreamWriter(path));
-
         public void SaveAsXml(Stream stream)
-            => SaveAsXml(new StreamWriter(stream));
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            var xml = this.ToXmlString();
+            stream.WriteString(xml);
+        }
+
+        public void SaveAsXml(string path)
+        {
+            using (var stream = new StreamWriter(path))
+                SaveAsXml(stream);
+        }
 
         public void SaveAsXml(TextWriter writer)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             
-            var xml = ToXmlString();
-            
-            using (writer)
-            {
-                writer.Write(xml);
-                writer.Flush();
-            }
+            var xml = this.ToXmlString();
+
+            writer.Write(xml);
+            writer.Flush();
         }
 
-        public Task SaveAsXmlAsync(string path)
-            => SaveAsXmlAsync(new StreamWriter(path));
-
         public Task SaveAsXmlAsync(Stream stream)
-            => SaveAsXmlAsync(new StreamWriter(stream));
+            => stream == null
+                ? throw new ArgumentNullException(nameof(stream))
+                : Task.Run(async () =>
+                {
+                    var xml = this.ToXmlString();
+
+                    await stream.WriteStringAsync(xml);
+                });
+
+        public Task SaveAsXmlAsync(string path)
+            => path == null
+                ? throw new ArgumentNullException(nameof(path))
+                : Task.Run(async () => 
+                {
+                    using (var stream = new StreamWriter(path))
+                        await SaveAsXmlAsync(stream);
+                });
 
         public Task SaveAsXmlAsync(TextWriter writer)
             => writer == null
                 ? throw new ArgumentNullException(nameof(writer))
                 : Task.Run(async () =>
                 {
-                    var xml = ToXmlString();
+                    var xml = this.ToXmlString();
             
-                    using (writer)
-                    {
-                        await writer.WriteAsync(xml);
-                        await writer.FlushAsync();
-                    }
+                    await writer.WriteAsync(xml);
+                    await writer.FlushAsync();
                 });
 
-        public void SaveAsJson(string path)
-            => SaveAsJson(new StreamWriter(path));
-
         public void SaveAsJson(Stream stream)
-            => SaveAsJson(new StreamWriter(stream));
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            var json = this.ToJsonString();
+            stream.WriteString(json);
+        }            
+
+        public void SaveAsJson(string path)
+        {
+            using (var stream = new StreamWriter(path))
+                SaveAsJson(stream);
+        }
 
         public void SaveAsJson(TextWriter writer)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            var json = ToJsonString();
+            var json = this.ToJsonString();
 
-            using(writer)
-            {
-                writer.Write(json);
-                writer.Flush();
-            }
+            writer.Write(json);
+            writer.Flush();
         }
         
-        public Task SaveAsJsonAsync(string path)
-            => SaveAsJsonAsync(new StreamWriter(path));
-
         public Task SaveAsJsonAsync(Stream stream)
-            => SaveAsJsonAsync(new StreamWriter(stream));
+            => stream == null
+                ? throw new ArgumentNullException(nameof(stream))
+                : Task.Run(async () =>
+                {
+                    var json = this.ToJsonString();
+                    await stream.WriteStringAsync(json);
+                });
+
+        public Task SaveAsJsonAsync(string path)
+            => path == null
+                ? throw new ArgumentNullException(nameof(path))
+                : Task.Run(async () => 
+                {
+                    using (var stream = new StreamWriter(path))
+                        await SaveAsJsonAsync(stream);
+                });
 
         public Task SaveAsJsonAsync(TextWriter writer)
             => writer == null
                 ? throw new ArgumentNullException(nameof(writer))
                 : Task.Run(async () =>
                 {
-                    var json = ToJsonString();
+                    var json = this.ToJsonString();
 
-                    using(writer)
-                    {
-                        await writer.WriteAsync(json);
-                        await writer.FlushAsync();
-                    }
+                    await writer.WriteAsync(json);
+                    await writer.FlushAsync();
                 });
 
-        public void SaveAsCsv(string path)
-            => SaveAsCsv(new StreamWriter(path));
-
         public void SaveAsCsv(Stream stream)
-            => SaveAsCsv(new StreamWriter(stream));
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            var csv = this.ToCsvString();
+            stream.WriteString(csv);
+        }
+
+        public void SaveAsCsv(string path)
+        {
+            using (var stream = new StreamWriter(path))
+                SaveAsCsv(stream);
+        }
 
         public void SaveAsCsv(TextWriter writer)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            var csv = ToCsvString();
+            var csv = this.ToCsvString();
 
-            using (writer)
-            {
-                writer.Write(csv);
-                writer.Flush();
-            }
+            writer.Write(csv);
+            writer.Flush();
         }
         
-        public Task SaveAsCsvAsync(string path)
-            => SaveAsCsvAsync(new StreamWriter(path));
-
         public Task SaveAsCsvAsync(Stream stream)
-            => SaveAsCsvAsync(new StreamWriter(stream));
+            => stream == null
+                ? throw new ArgumentNullException(nameof(stream))
+                : Task.Run(async () =>
+                {
+                    var csv = ToCsvString();
+                    await stream.WriteStringAsync(csv);
+                });
+
+        public Task SaveAsCsvAsync(string path)
+            => path == null
+                ? throw new ArgumentNullException(nameof(path))
+                : Task.Run(async () => 
+                {
+                    using (var stream = new StreamWriter(path))
+                        await SaveAsCsvAsync(stream);
+                });
 
         public Task SaveAsCsvAsync(TextWriter writer)
             => writer == null
                 ? throw new ArgumentNullException(nameof(writer))
                 : Task.Run(async () =>
                 {
-                    var csv = ToCsvString();
+                    var csv = this.ToCsvString();
 
-                    using (writer)
-                    {
-                        await writer.WriteAsync(csv);
-                        await writer.FlushAsync();
-                    }
+                    await writer.WriteAsync(csv);
+                    await writer.FlushAsync();
                 });
         
         private string ToXmlString() 
             => _properties.Aggregate(new StringBuilder().AppendLine("<?xml version='1.0' encoding='UTF-8'?>")
                                                         .AppendLine("<properties>"),
-            (stringBuilder, property) => stringBuilder.AppendLine($"\t<property key='{property.Key}' value='{property.Value}' />"),
-            stringBuilder => stringBuilder.Append("</properties>").ToString());
+                                    (stringBuilder, property) => stringBuilder.AppendLine($"\t<property key='{property.Key}' value='{property.Value}' />"),
+                                    stringBuilder => stringBuilder.Append("</properties>").ToString());
 
         private string ToJsonString()
         {

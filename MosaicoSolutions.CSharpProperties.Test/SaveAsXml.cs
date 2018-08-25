@@ -1,5 +1,7 @@
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using MosaicoSolutions.CSharpProperties.Test.IO;
 using Xunit;
 
 namespace MosaicoSolutions.CSharpProperties.Test
@@ -36,7 +38,7 @@ role=Turist";
 
             var properties = Properties.Load(new StringReader(content));
 
-            var file = @"C:\temp\properties.xml";
+            var file = $"{TestDirectory.PropertiesDirectoryPath}/properties.xml";
 
             properties.SaveAsXml(file);
 
@@ -62,6 +64,53 @@ role=Turist";
 
                 Assert.Equal(properties2.Count(), 0);
                 Assert.Empty(properties2);
+            }
+        }
+
+        public void MustSaveAndNotDisposeStream()
+        {
+            TextWriter writer = null;
+
+            try
+            {
+                writer = new StringWriter();
+                var properties = Properties.Load($"{TestDirectory.PropertiesDirectoryPath}/db.properties");
+
+                properties.SaveAsXml(writer);
+                
+                writer.WriteLine("prop2=value2");
+                writer.Flush();
+
+                Assert.Contains("prop2=value2", writer.ToString());
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
+            }
+        }
+
+        [Fact]
+        public async Task MustSaveAndNotDisposeStreamAsync()
+        {
+            TextWriter writer = null;
+
+            try
+            {
+                writer = new StringWriter();
+                var properties = await Properties.LoadAsync($"{TestDirectory.PropertiesDirectoryPath}/db.properties");
+
+                await properties.SaveAsXmlAsync(writer);
+                
+                await writer.WriteLineAsync("prop2=value2");
+                await writer.FlushAsync();
+
+                Assert.Contains("prop2=value2", writer.ToString());
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
             }
         }
     }

@@ -29,7 +29,7 @@ namespace MosaicoSolutions.CSharpProperties
 
         public static IProperties LoadFromXml(string path)
             => IsXmlFile(path)
-                ? LoadFromXml(new StreamReader(path))
+                ? LoadFromStrategy(XmlStrategy, path)
                 : throw new IOException("The file must have the extension '.xml'.");
 
         private static bool IsXmlFile(string path)
@@ -43,7 +43,7 @@ namespace MosaicoSolutions.CSharpProperties
 
         public static Task<IProperties> LoadFromXmlAsync(string path)
             => IsXmlFile(path)
-                ? LoadFromXmlAsync(new StreamReader(path))
+                ? LoadFromStrategyAsync(XmlStrategy, path)
                 : throw new IOException("The file must have the extension '.xml'.");
 
         public static Task<IProperties> LoadFromXmlAsync(TextReader reader)

@@ -1,0 +1,10 @@
+[
+	{
+		"key": "host",
+		"value": "localhost"
+	},
+	{
+		"key": "database",
+		"value": "inception"
+	}
+]

@@ -7,7 +7,10 @@ namespace MosaicoSolutions.CSharpProperties
     public sealed partial class Properties
     {
         public static IProperties LoadFromStrategy(PropertiesStrategy strategy, string path)
-            => LoadFromStrategy(strategy, new StreamReader(path));
+        {
+            using (var stream  = new StreamReader(path))
+                return LoadFromStrategy(strategy, stream);
+        }
         
         public static IProperties LoadFromStrategy(PropertiesStrategy strategy, Stream stream)
             => LoadFromStrategy(strategy, new StreamReader(stream));
@@ -19,13 +22,20 @@ namespace MosaicoSolutions.CSharpProperties
 
             if(reader == null)
                 throw new ArgumentException(nameof(reader));
-
-            using(reader)
-                return strategy(reader.ReadToEnd());
+            
+            return strategy(reader.ReadToEnd());
         }
 
         public static Task<IProperties> LoadFromStrategyAsync(PropertiesStrategy strategy, string path)
-            => LoadFromStrategyAsync(strategy, new StreamReader(path));
+        {
+            var stream = new StreamReader(path);
+
+            return Task.Run(async () => 
+            {
+                using (stream)
+                    return await LoadFromStrategyAsync(strategy, stream);
+            });
+        }
         
         public static Task<IProperties> LoadFromStrategyAsync(PropertiesStrategy strategy, Stream stream)
             => LoadFromStrategyAsync(strategy, new StreamReader(stream));
@@ -40,8 +50,7 @@ namespace MosaicoSolutions.CSharpProperties
 
             return Task.Run(async () =>
             {
-                using(reader)
-                    return strategy(await reader.ReadToEndAsync());
+                return strategy(await reader.ReadToEndAsync());
             });
         }
     }

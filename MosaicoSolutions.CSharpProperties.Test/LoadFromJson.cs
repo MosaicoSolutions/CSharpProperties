@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using MosaicoSolutions.CSharpProperties.Test.IO;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -30,14 +31,14 @@ namespace MosaicoSolutions.CSharpProperties.Test
         public void InvalidFile()
             => Assert.Throws<IOException>(() =>
             {
-                var properties = Properties.LoadFromJson(@"C:\temp\properties.txt");
+                var properties = Properties.LoadFromJson($"{TestDirectory.PropertiesDirectoryPath}/properties.txt");
             });
 
         [Fact]
         public void InvalidJsonSchema()
             => Assert.Throws<JsonSchemaValidationException>(() =>
             {
-                var properties = Properties.LoadFromJson(File.Open(@"C:\temp\propertiesInvalidSchema.json", FileMode.Open));
+                var properties = Properties.LoadFromJson(File.Open($"{TestDirectory.PropertiesDirectoryPath}/propertiesInvalidSchema.json", FileMode.Open));
             });
 
         [Fact]
@@ -57,6 +58,23 @@ namespace MosaicoSolutions.CSharpProperties.Test
             Assert.Equal(properties.Count(), 2);
             Assert.Equal(properties["host"], "localhost");
             Assert.Equal(properties["database"], "inception");
+        }
+
+        [Fact]
+        public void MustLoadAndDoNotDisposeStream()
+        {
+            string sourceFile = $"{TestDirectory.PropertiesDirectoryPath}/properties.json";
+            string targetFile = $"{TestDirectory.PropertiesDirectoryPath}/properties_copy.json";
+
+            File.Copy(sourceFileName: sourceFile, destFileName: targetFile, overwrite: true);
+
+            using (var stream = File.Open(targetFile, FileMode.Open))
+            {
+                var properties = Properties.LoadFromJson(stream);
+
+                stream.WriteByte(byte.MinValue);
+                stream.WriteByte(byte.MaxValue);
+            }
         }
     }
 }
