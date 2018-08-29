@@ -48,7 +48,7 @@ namespace MosaicoSolutions.CSharpProperties.Test
 
             var properties = Properties.LoadFromJson(new StringReader(json));
 
-            var file = $"{TestDirectory.PropertiesDirectoryPath}/properties.json";
+            var file = $"{TestDirectory.PropertiesDirectoryPath}/properties2.json";
             properties.SaveAsJson(file);
 
             var properties2 = Properties.LoadFromJson(file);
@@ -107,7 +107,7 @@ namespace MosaicoSolutions.CSharpProperties.Test
             try
             {
                 writer = new StringWriter();
-                var properties = await Properties.LoadAsync($"{TestDirectory.PropertiesDirectoryPath}/db.properties");
+                var properties = await Properties.LoadAsync($"{TestDirectory.PropertiesDirectoryPath}/userProperties.properties");
 
                 await properties.SaveAsJsonAsync(writer);
                 

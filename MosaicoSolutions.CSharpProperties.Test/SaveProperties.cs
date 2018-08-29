@@ -34,7 +34,7 @@ namespace MosaicoSolutions.CSharpProperties.Test
         [Fact]
         public async Task SaveInFileAsync()
         {
-            var file = $@"{TestDirectory.PropertiesDirectoryPath}/db.properties";
+            var file = $@"{TestDirectory.PropertiesDirectoryPath}/properties.txt";
 
             var properties = await Properties.LoadAsync(new FileStream(file, FileMode.Open));
 

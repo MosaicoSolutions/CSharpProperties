@@ -30,7 +30,7 @@ role;turist";
         }
 
         [Fact]
-        public void SavePropertiesAsJsonFile()
+        public void SavePropertiesAsCsvFile()
         {
             const string csv = 
 @"email;saito@mail.com
@@ -38,7 +38,7 @@ role;turist";
 
             var properties = Properties.LoadFromCsv(new StringReader(csv));
 
-            var file = @"C:\temp\properties.csv";
+            var file = $"{TestDirectory.PropertiesDirectoryPath}/properties2.csv";
             properties.SaveAsCsv(file);
 
             var properties2 = Properties.LoadFromCsv(file);
