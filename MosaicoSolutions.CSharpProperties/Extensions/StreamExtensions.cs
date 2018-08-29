@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,10 +41,6 @@ namespace MosaicoSolutions.CSharpProperties.Extensions
             });
 
         private static byte[] GetBytes(string property)
-        {
-            var bytes = new byte[property.Length * sizeof(char)];
-            Buffer.BlockCopy(property.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
+            => Encoding.UTF8.GetBytes(property);
     }
 }
