@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/MosaicoSolutions/CSharpProperties</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/MosaicoSolutions/CSharpProperties/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/MosaicoSolutions/CSharpProperties</RepositoryUrl>
-    <Version>3.0</Version>
+    <Version>3.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
