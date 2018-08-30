@@ -141,7 +141,21 @@ You can load and save the properties from Json, Xml and csv.
 ### Json
 
 ```c#
-var properties = Properties.LoadFromJson(new StringReader(content));
+const string json = 
+@"[
+    {
+        'key': 'host', 'value':'localhost'
+    },
+    {
+        'key': 'database', 'value':'inception'
+    }
+]";
+
+var properties = Properties.LoadFromJson(new StringReader(json));
+properties.Add("name", "Yusuf");
+properties.Add("role", "chemist");
+
+properties.SaveAsJson(@"C:\temp\properties.json");
 ```
 
 > The json should follow the following scheme
@@ -165,23 +179,20 @@ var properties = Properties.LoadFromJson(new StringReader(content));
 }
 ```
 
-```json
-[
-    {
-        "key": "host",
-        "value": "localhost"
-    },
-    {
-        "key": "database",
-        "value": "inception"
-    }
-]
-```
-
 ### Xml
 
 ```c#
-var properties = Properties.LoadFromXml(new StringReader(content));
+const string xml = 
+@"<?xml version='1.0' encoding='UTF-8'?>
+<properties>
+    <property key='email' value='ariadne@gmail.com'/>
+</properties>";
+
+var properties = Properties.LoadFromXml(new StringReader(xml));
+properties.Add("name", "Yusuf");
+properties.Add("role", "chemist");
+
+properties.SaveAsXml(@"C:\temp\properties.xml");
 ```
 
 > The xml should follow the following scheme
@@ -219,26 +230,22 @@ var properties = Properties.LoadFromXml(new StringReader(content));
 </xs:schema>
 ```
 
-```xml
-<?xml version='1.0' encoding='UTF-8'?>
-<properties>
-    <property key='name' value='Saito' />
-    <property key='role' value='Turist' />
-</properties>
-```
-
 ### CSV
 
 ```c#
-var properties = Properties.LoadFromCsv(new StringReader(content));
+const string csv = 
+@"email;saito@mail.com
+role;turist";
+
+var properties = Properties.LoadFromCsv(new StringReader(csv));
+properties.Add("name", "Yusuf");
+properties.Add("role", "chemist");
+
+properties.SaveAsCsv(@"C:\temp\properties.csv");
 ```
 
 > The delimiter character used is the semicolon (';')
 
-```csv
-email;saito@mail.com
-role;turist
-```
 
 ## Defining a Strategy
 
