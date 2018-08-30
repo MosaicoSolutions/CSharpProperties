@@ -33,8 +33,6 @@ var properties = Properties.Load(File.Open(path, FileMode.Open));
 
 `File.Open()` return a `FileStream` to file specified by `path` variable.
 
-> The `Load` method calls `Dispose` in its execution, so do not reuse the stream object.
-
 ### 3. Load from Reader
 
 You can use a `StreamReader` or `StringReader` for load the properties.
@@ -49,8 +47,6 @@ database=test
 var properties = Properties.Load(new StringReader(content));
 ```
 
-> The `Load` method calls `Dispose` in its execution, so do not reuse the reader object.
-
 ### LoadAsync
 
 Use `LoadAsync` for asynchronous operations:
@@ -61,7 +57,7 @@ var properties = await Properties.LoadAsync(@"C:\temp\db.properties");
 
 ## Getting the Properties
 
-By default, lines beginning with the characters `'`, `;` and `#` are considered comments and will not be treated as a property. A valid property, by default, follows the template: `host=localhost` where `host` is the key and `localhost` is the value.
+By default, lines beginning with the characters `"`, `;` and `#` are considered comments and will not be treated as a property. A valid property, by default, follows the template: `host=localhost` where `host` is the key and `localhost` is the value.
 
 > Do not use the same key twice, the Properties class will only handle the first key-value pair, the others will be disregarded.
 
@@ -87,11 +83,9 @@ foreach (var property in properties)
 You can save the properties just by passing the `File Path`, or a `Stream`, or a `Reader`.
 
 ```c#
-properties.Add("database", "test"); // add a property 'database' with value of 'test'
+properties.Add("database", "test"); // add a property "database" with value of "test"
 properties.Save(@"C:\temp\db.properties"); // The file where the properties will be saved
 ```
-
-> The `Save` method calls `Dispose` in its execution, so if you use a `Stream` or a `Writer` to store the properties, do not reuse the object.
 
 ### SaveAsync
 
@@ -109,7 +103,7 @@ You can customize how the `Properties` class handles properties. See the example
 var content = @"
 username:=cooper
 
-#Don't make this!
+#Don"t make this!
 password:=1234
 
 #Email will not be captured by the handle
@@ -139,5 +133,131 @@ The `PropertyHandle` method is responsible for extracting the property of a stri
 
 
 Finally, use `PropertiesBuilder` to construct the properties using the handlers, in a fluent interface.
+
+## Properties Strategy
+
+You can load and save the properties from Json, Xml and csv.
+
+### Json
+
+```c#
+var properties = Properties.LoadFromJson(new StringReader(content));
+```
+
+> The json should follow the following scheme
+
+```json
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "key": {
+                "type": "string",
+                "required": true
+            },
+            "value": {
+                "type": "string",
+                "required": true
+            }
+        }
+    }
+}
+```
+
+```json
+[
+    {
+        "key": "host",
+        "value": "localhost"
+    },
+    {
+        "key": "database",
+        "value": "inception"
+    }
+]
+```
+
+### Xml
+
+```c#
+var properties = Properties.LoadFromXml(new StringReader(content));
+```
+
+> The xml should follow the following scheme
+
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'
+	attributeFormDefault='unqualified' elementFormDefault='qualified'>
+    <xs:element name='properties' type='propertiesType' />
+    <xs:complexType name='propertiesType'>
+        <xs:sequence>
+            <xs:element type='propertyType' name='property' maxOccurs='unbounded' minOccurs='0' />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name='propertyType'>
+        <xs:simpleContent>
+            <xs:extension base='xs:string'>
+                <xs:attribute type='keyType' name='key' use='required' />
+                <xs:attribute type='valueType' name='value' use='required' />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:simpleType name='keyType'>
+        <xs:restriction base='xs:string'>
+            <xs:minLength value='1' />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name='valueType'>
+        <xs:restriction base='xs:string'>
+            <xs:minLength value='0' />
+        </xs:restriction>
+    </xs:simpleType>
+	
+</xs:schema>
+```
+
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<properties>
+    <property key='name' value='Saito' />
+    <property key='role' value='Turist' />
+</properties>
+```
+
+### CSV
+
+```c#
+var properties = Properties.LoadFromCsv(new StringReader(content));
+```
+
+> The delimiter character used is the semicolon (';')
+
+```csv
+email;saito@mail.com
+role;turist
+```
+
+## Defining a Strategy
+
+To define your own strategy use the Delegate `PropertiesStrategy`
+
+```c#
+PropertiesStrategy myStrategy = content => 
+{
+    //Do yout logic here...
+
+    return Of(properties);
+};
+```
+
+`PropertiesStrategy` receives as argument a string that is the content read from the file (or `Stream`) and returns an `IProperties`. 
+Use the `LoadFromStrategy` method to load properties based on the created strategy.
+
+```c#
+var properties = Properties.LoadFromStrategy(myStrategy, file);
+```
 
 ## <> With :heart: and [VSCode](https://code.visualstudio.com)
