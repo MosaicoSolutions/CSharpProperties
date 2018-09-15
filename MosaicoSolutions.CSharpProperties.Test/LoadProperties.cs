@@ -19,7 +19,7 @@ namespace MosaicoSolutions.CSharpProperties.Test
         ";
 
         [Fact]
-        public void LoadFromString()
+        public void LoadFromStringReader()
         {
             var properties = Properties.Load(new StringReader(_content));
 
@@ -31,7 +31,7 @@ namespace MosaicoSolutions.CSharpProperties.Test
         }
 
         [Fact]
-        public async Task LoadFromStringAsync()
+        public async Task LoadFromStringReaderAsync()
         {
             var properties = await Properties.LoadAsync(new StringReader(_content));
 
@@ -77,10 +77,10 @@ namespace MosaicoSolutions.CSharpProperties.Test
                         : new KeyValuePair<string, string>();
             }
         
-            var properties = PropertiesBuild.NewPropertiesBuild()
-                                            .WithValidLineHandle(IsValidLine)
-                                            .WithExtractPropertyHandle(PropertyHandle)
-                                            .BuildWithReader(new StringReader(content));
+            var properties = new PropertiesBuilder()
+                                    .WithValidLineHandle(IsValidLine)
+                                    .WithExtractPropertyHandle(PropertyHandle)
+                                    .BuildWithReader(new StringReader(content));
 
             Assert.Equal(properties["password"], "1234");
             Assert.Equal(properties["username"], "cooper");
@@ -111,10 +111,10 @@ namespace MosaicoSolutions.CSharpProperties.Test
                         : new KeyValuePair<string, string>();
             }
         
-            var properties = await PropertiesBuild.NewPropertiesBuild()
-                                                  .WithValidLineHandle(IsValidLine)
-                                                  .WithExtractPropertyHandle(PropertyHandle)
-                                                  .BuildWithReaderAsync(new StringReader(content));
+            var properties = await new PropertiesBuilder()
+                                        .WithValidLineHandle(IsValidLine)
+                                        .WithExtractPropertyHandle(PropertyHandle)
+                                        .BuildWithReaderAsync(new StringReader(content));
 
             Assert.Equal(properties["password"], "1234");
             Assert.Equal(properties["username"], "cooper");
@@ -138,6 +138,30 @@ namespace MosaicoSolutions.CSharpProperties.Test
                 stream.WriteByte(5);
                 stream.Flush();
             }
+        }
+
+        [Fact]
+        public void LoadFromString()
+        {
+            var properties = Properties.LoadFromString(_content);
+
+            Assert.Equal(properties["host"], "localhost");
+            Assert.Equal(properties["port"], "123");
+            Assert.Equal(properties["database"], "test");
+
+            Assert.Equal(properties.Count(), 3);
+        }
+
+        [Fact]
+        public async Task LoadFromStringAsync()
+        {
+            var properties = await Properties.LoadFromStringAsync(_content);
+
+            Assert.Equal(properties["host"], "localhost");
+            Assert.Equal(properties["port"], "123");
+            Assert.Equal(properties["database"], "test");
+
+            Assert.Equal(properties.Count(), 3);
         }
     }
 }

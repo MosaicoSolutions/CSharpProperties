@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using MosaicoSolutions.CSharpProperties.Extensions;
+using MosaicoSolutions.CSharpProperties.IO;
 
 namespace MosaicoSolutions.CSharpProperties
 {

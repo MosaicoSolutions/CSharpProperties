@@ -35,6 +35,12 @@ namespace MosaicoSolutions.CSharpProperties
         private static bool IsXmlFile(string path)
             => path.EndsWith(".xml");
 
+        public static IProperties LoadFromXmlString(string xml)
+        {
+            using (var stream = new StringReader(xml))
+                return LoadFromXml(stream);
+        }
+        
         public static IProperties LoadFromXml(TextReader reader)
             => LoadFromStrategy(XmlStrategy, reader);
 
@@ -45,6 +51,17 @@ namespace MosaicoSolutions.CSharpProperties
             => IsXmlFile(path)
                 ? LoadFromStrategyAsync(XmlStrategy, path)
                 : throw new IOException("The file must have the extension '.xml'.");
+
+        public static Task<IProperties> LoadFromXmlStringAsync(string csv)
+        {
+            var stream = new StringReader(csv);
+
+            return Task.Run(async () => 
+            {
+                using (stream)
+                    return await LoadFromXmlAsync(stream);
+            });
+        }
 
         public static Task<IProperties> LoadFromXmlAsync(TextReader reader)
             => LoadFromStrategyAsync(XmlStrategy, reader);

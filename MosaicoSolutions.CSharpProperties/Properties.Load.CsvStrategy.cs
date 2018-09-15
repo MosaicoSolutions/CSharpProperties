@@ -47,6 +47,12 @@ namespace MosaicoSolutions.CSharpProperties
         private static bool IsCsvFile(string path)
             => path.EndsWith(".csv");
 
+        public static IProperties LoadFromCsvString(string csv)
+        {
+            using (var stream = new StringReader(csv))
+                return LoadFromCsv(stream);
+        }
+
         public static IProperties LoadFromCsv(TextReader reader)
             => LoadFromStrategy(CsvStrategy, reader);
 
@@ -57,6 +63,17 @@ namespace MosaicoSolutions.CSharpProperties
             => IsCsvFile(path)
                 ? LoadFromStrategyAsync(CsvStrategy, path)
                 : throw new IOException("The file must have the extension '.csv'.");
+
+        public static Task<IProperties> LoadFromCsvStringAsync(string csv)
+        {
+            var stream = new StringReader(csv);
+
+            return Task.Run(async () => 
+            {
+                using (stream)
+                    return await LoadFromCsvAsync(stream);
+            });
+        }
 
         public static Task<IProperties> LoadFromCsvAsync(TextReader reader)
             => LoadFromStrategyAsync(CsvStrategy, reader);
