@@ -77,10 +77,10 @@ namespace MosaicoSolutions.CSharpProperties.Test
                         : new KeyValuePair<string, string>();
             }
         
-            var properties = PropertiesBuild.NewPropertiesBuild()
-                                            .WithValidLineHandle(IsValidLine)
-                                            .WithExtractPropertyHandle(PropertyHandle)
-                                            .BuildWithReader(new StringReader(content));
+            var properties = new PropertiesBuilder()
+                                    .WithValidLineHandle(IsValidLine)
+                                    .WithExtractPropertyHandle(PropertyHandle)
+                                    .BuildWithReader(new StringReader(content));
 
             Assert.Equal(properties["password"], "1234");
             Assert.Equal(properties["username"], "cooper");
@@ -111,10 +111,10 @@ namespace MosaicoSolutions.CSharpProperties.Test
                         : new KeyValuePair<string, string>();
             }
         
-            var properties = await PropertiesBuild.NewPropertiesBuild()
-                                                  .WithValidLineHandle(IsValidLine)
-                                                  .WithExtractPropertyHandle(PropertyHandle)
-                                                  .BuildWithReaderAsync(new StringReader(content));
+            var properties = await new PropertiesBuilder()
+                                        .WithValidLineHandle(IsValidLine)
+                                        .WithExtractPropertyHandle(PropertyHandle)
+                                        .BuildWithReaderAsync(new StringReader(content));
 
             Assert.Equal(properties["password"], "1234");
             Assert.Equal(properties["username"], "cooper");
