@@ -13,6 +13,12 @@ namespace MosaicoSolutions.CSharpProperties
         public static IProperties Load(string path)
             => Load(path, IsValidLine, ExtractPropertyFromLine);
         
+        public static IProperties LoadFromString(string content)
+        {
+            using (var reader = new StringReader(content))
+                return Load(reader);
+        }
+
         public static IProperties Load(TextReader reader)
             => Load(reader, IsValidLine, ExtractPropertyFromLine);
 
@@ -21,6 +27,17 @@ namespace MosaicoSolutions.CSharpProperties
 
         public static Task<IProperties> LoadAsync(string path)
             => LoadAsync(path, IsValidLine, ExtractPropertyFromLine);
+
+        public static Task<IProperties> LoadFromStringAsync(string content)
+        {
+            var reader = new StringReader(content);
+
+            return Task.Run(async () =>
+            {
+                using (reader)
+                    return await LoadAsync(reader);
+            });
+        }
 
         public static Task<IProperties> LoadAsync(TextReader reader)
             => LoadAsync(reader, IsValidLine, ExtractPropertyFromLine);
