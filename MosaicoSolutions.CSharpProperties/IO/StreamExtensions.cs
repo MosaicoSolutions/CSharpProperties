@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MosaicoSolutions.CSharpProperties.Extensions
+namespace MosaicoSolutions.CSharpProperties.IO
 {
     public static class StreamExtensions
     {
