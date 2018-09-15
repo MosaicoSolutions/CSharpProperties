@@ -18,10 +18,10 @@ namespace MosaicoSolutions.CSharpProperties
         public static IProperties LoadFromStrategy(PropertiesStrategy strategy, TextReader reader)
         {
             if(strategy == null)
-                throw new ArgumentException(nameof(strategy));
+                throw new ArgumentNullException(nameof(strategy));
 
             if(reader == null)
-                throw new ArgumentException(nameof(reader));
+                throw new ArgumentNullException(nameof(reader));
             
             return strategy(reader.ReadToEnd());
         }
@@ -43,10 +43,10 @@ namespace MosaicoSolutions.CSharpProperties
         public static Task<IProperties> LoadFromStrategyAsync(PropertiesStrategy strategy, TextReader reader)
         {
             if(strategy == null)
-                throw new ArgumentException(nameof(strategy));
+                throw new ArgumentNullException(nameof(strategy));
 
             if(reader == null)
-                throw new ArgumentException(nameof(reader));
+                throw new ArgumentNullException(nameof(reader));
 
             return Task.Run(async () =>
             {
