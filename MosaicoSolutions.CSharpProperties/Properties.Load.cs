@@ -14,10 +14,7 @@ namespace MosaicoSolutions.CSharpProperties
             => Load(path, IsValidLine, ExtractPropertyFromLine);
         
         public static IProperties LoadFromString(string content)
-        {
-            using (var reader = new StringReader(content))
-                return Load(reader);
-        }
+            => LoadFromString(content, IsValidLine, ExtractPropertyFromLine);
 
         public static IProperties Load(TextReader reader)
             => Load(reader, IsValidLine, ExtractPropertyFromLine);
@@ -29,15 +26,7 @@ namespace MosaicoSolutions.CSharpProperties
             => LoadAsync(path, IsValidLine, ExtractPropertyFromLine);
 
         public static Task<IProperties> LoadFromStringAsync(string content)
-        {
-            var reader = new StringReader(content);
-
-            return Task.Run(async () =>
-            {
-                using (reader)
-                    return await LoadAsync(reader);
-            });
-        }
+            => LoadFromStringAsync(content, IsValidLine, ExtractPropertyFromLine);
 
         public static Task<IProperties> LoadAsync(TextReader reader)
             => LoadAsync(reader, IsValidLine, ExtractPropertyFromLine);
@@ -53,6 +42,14 @@ namespace MosaicoSolutions.CSharpProperties
                 return Load(stream, isValidLine, extractProperty);
         }
         
+        public static IProperties LoadFromString(string content,
+                                                 Func<string, bool> isValidLine,
+                                                 Func<string, KeyValuePair<string, string>> extractProperty)
+        {
+            using (var reader = new StringReader(content))
+                return Load(reader, isValidLine, extractProperty);
+        }
+
         public static IProperties Load(Stream stream,
                                        Func<string, bool> isValidLine,
                                        Func<string, KeyValuePair<string, string>> extractProperty)
@@ -96,6 +93,19 @@ namespace MosaicoSolutions.CSharpProperties
             {
                 using (stream)
                     return await LoadAsync(stream, isValidLine, extractProperty);
+            });
+        }
+
+        public static Task<IProperties> LoadFromStringAsync(string content, 
+                                                            Func<string, bool> isValidLine, 
+                                                            Func<string, KeyValuePair<string, string>> extractProperty)
+        {
+            var reader = new StringReader(content);
+
+            return Task.Run(async () => 
+            {
+                using (reader)
+                    return await LoadAsync(reader, isValidLine, extractProperty);
             });
         }
 
