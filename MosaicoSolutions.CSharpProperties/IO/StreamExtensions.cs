@@ -42,5 +42,34 @@ namespace MosaicoSolutions.CSharpProperties.IO
 
         private static byte[] GetBytes(string property)
             => Encoding.UTF8.GetBytes(property);
+
+        public static IProperties ReadAsProperties(this Stream @this)
+        {
+            var bytes = @this.ToByteArray();
+            var stringContent = GetString(bytes);
+            return Properties.LoadFromString(stringContent);
+        }
+
+        public static Task<IProperties> ReadAsPropertiesAsync(this Stream @this)
+        {
+            var bytes = @this.ToByteArray();
+            var stringContent = GetString(bytes);
+            return Properties.LoadFromStringAsync(stringContent);
+        }
+
+        public static byte[] ToByteArray(this Stream @this)
+        {
+            if (@this is MemoryStream memoryStream)
+                return memoryStream.ToArray();
+
+            using (var ms = new MemoryStream())
+            {
+                @this.CopyTo(ms);
+                return ms.ToArray();
+            }
+        }
+
+        private static string GetString(byte[] bytes)
+            => Encoding.UTF8.GetString(bytes);
     }
 }
